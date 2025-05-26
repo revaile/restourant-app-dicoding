@@ -1,5 +1,3 @@
-// restaurant_list_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restourantapp/provider/restaurant_provider.dart';
@@ -38,12 +36,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = Colors.green.shade400;
-    final Color accentColor = Colors.lightGreen.shade200;
-    final Color backgroundColor = Colors.grey.shade50;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -56,22 +52,19 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     children: [
                       Text(
                         "Restaurants",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: primaryColor,
+                        style: theme.textTheme.headlineLarge?.copyWith(
+                          color: colorScheme.primary,
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.restaurant, color: primaryColor, size: 28),
+                      Icon(Icons.restaurant, color: colorScheme.primary, size: 28),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Recommendation restaurant for you!",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade600,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -79,10 +72,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search restaurant...',
-                      hintStyle: TextStyle(color: Colors.grey.shade500),
-                      prefixIcon: Icon(Icons.search, color: primaryColor),
+                      hintStyle: TextStyle(color: theme.hintColor),
+                      prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: theme.cardColor,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
@@ -90,7 +83,9 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                       contentPadding: const EdgeInsets.symmetric(vertical: 0),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: primaryColor, width: 2),
+                        borderSide: BorderSide(
+                          color: colorScheme.primary, 
+                          width: 2),
                       ),
                     ),
                     onChanged: _onSearchChanged,
@@ -101,12 +96,14 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                       builder: (_) {
                         if (state.state == ResultState.loading) {
                           return Center(
-                            child: CircularProgressIndicator(color: primaryColor),
+                            child: CircularProgressIndicator(
+                              color: colorScheme.primary),
                           );
                         } else if (state.state == ResultState.hasData) {
                           return ListView.separated(
                             itemCount: state.result.restaurants.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 12),
+                            separatorBuilder: (context, index) => 
+                              const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final restaurant = state.result.restaurants[index];
                               return InkWell(
@@ -120,16 +117,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                                     ),
                                   );
                                 },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
+                                child: Card(
+                                  elevation: 2,
+                                  shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.grey.withOpacity(0.1),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 4))
-                                    ],
                                   ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(12.0),
@@ -156,9 +147,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                                             children: [
                                               Text(
                                                 restaurant.name,
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.bold),
+                                                style: theme.textTheme.titleLarge,
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -166,37 +155,38 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                                               Row(
                                                 children: [
                                                   Icon(Icons.location_on,
-                                                      size: 16, color: primaryColor),
+                                                      size: 16, 
+                                                      color: colorScheme.primary),
                                                   const SizedBox(width: 4),
                                                   Text(
                                                     restaurant.city,
-                                                    style: TextStyle(
-                                                        fontSize: 13,
-                                                        color: Colors.grey.shade600),
+                                                    style: theme.textTheme.bodyMedium
+                                                      ?.copyWith(
+                                                        color: theme.textTheme.bodyMedium
+                                                          ?.color?.withOpacity(0.7)),
                                                   ),
                                                 ],
                                               ),
                                               const SizedBox(height: 8),
                                               Row(
                                                 children: [
-                                                  Icon(Icons.star,
+                                                  Icon( Icons.star,
                                                       size: 16,
                                                       color: Colors.amber),
                                                   const SizedBox(width: 4),
                                                   Text(
                                                     restaurant.rating.toString(),
-                                                    style: TextStyle(
-                                                      fontSize: 13,
-                                                      fontWeight: FontWeight.bold,
-                                                      color: Colors.grey.shade800,
-                                                    ),
+                                                    style: theme.textTheme.bodyMedium
+                                                      ?.copyWith(
+                                                        fontWeight: FontWeight.bold),
                                                   ),
                                                   const Spacer(),
                                                   Container(
                                                     padding: const EdgeInsets.symmetric(
                                                         horizontal: 8, vertical: 4),
                                                     decoration: BoxDecoration(
-                                                      color: accentColor,
+                                                      color: colorScheme.secondary
+                                                        .withOpacity(0.2),
                                                       borderRadius:
                                                           BorderRadius.circular(12),
                                                     ),
@@ -206,7 +196,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                                                           : 'Standard',
                                                       style: TextStyle(
                                                         fontSize: 12,
-                                                        color: Colors.green.shade800,
+                                                        color: colorScheme.secondary,
                                                         fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
@@ -227,14 +217,14 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                           return Center(
                             child: Text(
                               state.message,
-                              style: TextStyle(color: Colors.grey.shade600),
+                              style: theme.textTheme.bodyLarge,
                             ),
                           );
                         } else {
                           return Center(
                             child: Text(
                               state.message,
-                              style: TextStyle(color: Colors.grey.shade600),
+                              style: theme.textTheme.bodyLarge,
                             ),
                           );
                         }

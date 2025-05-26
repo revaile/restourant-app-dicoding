@@ -12,6 +12,11 @@ enum ResultState { loading, hasData, noData, error }
 
 class RestaurantProvider extends ChangeNotifier {
   final ApiService apiService;
+  bool _isSubmittingReview = false;
+  String? _reviewError;
+
+  bool get isSubmittingReview => _isSubmittingReview;
+  String? get reviewError => _reviewError;
 
   RestaurantProvider(this.apiService) {
     fetchAllRestaurants();
@@ -81,16 +86,22 @@ class RestaurantProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> submitReview({
-  required String id,
-  required String name,
-  required String review,
-}) async {
-  try {
-    await apiService.postReview(id: id, name: name, review: review);
-  } catch (e) {
-    rethrow;
-  }
-}
+  Future<void> submitReview(
+      {required String id,
+      required String name,
+      required String review}) async {
+    _isSubmittingReview = true;
+    _reviewError = null;
+    notifyListeners();
 
+    try {
+      await apiService.postReview(id: id, name: name, review: review);
+      await fetchRestaurantDetail(id);
+    } catch (e) {
+      _reviewError = 'Failed to submit review';
+    } finally {
+      _isSubmittingReview = false;
+      notifyListeners();
+    }
+  }
 }
